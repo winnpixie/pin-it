@@ -1,21 +1,17 @@
 (function () {
     'use strict';
 
+    console.log("searching for main script...");
     // TODO: Work on a less hacky way to get the authentication token
     let authToken = '';
     for (let _script of document.scripts) {
-        if (_script.src.indexOf('abs.twimg.com/responsive-web/web/main') !== -1) {
+        if (_script.src.indexOf('/main') !== -1) {
             console.log("main script found!");
-
-            window.fetch(_script.src).then(res => {
-                if (res.ok) {
-                    res.text().then(txt => {
-                        let line = txt.substring(txt.indexOf('Web-12",') + 8);
-                        line = line.substring(line.indexOf('"') + 1);
-                        authToken = line.substring(0, line.indexOf('"'));
-                    });
-                }
-            });
+            window.fetch(_script.src).then(res => res.text().then(txt => {
+                let line = txt.substring(txt.indexOf('Web-12",') + 8);
+                line = line.substring(line.indexOf('"') + 1);
+                authToken = line.substring(0, line.indexOf('"'));
+            }));
             break;
         }
     }
@@ -39,14 +35,15 @@
                                 'x-twitter-active-user': 'yes'
                             },
                             body: `authenticity_token=${authToken}&tweet_mode=extended&id=${jsonObj.id_str}`
-                        }).then(res => alert(res.ok ? 'Pinned!' : 'Could not pin tweet!'));
+                        }).then(res => alert(res.ok ? 'Pinned! :)' : 'Could not pin tweet! :('));
                     }
                 }
                 oldCallback();
             }
             oldXhrSend.apply(this, params);
         }
-
         console.log("anypin active!");
+    } else {
+        console.log("could not find auth token!");
     }
 })();

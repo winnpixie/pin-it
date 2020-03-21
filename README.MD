@@ -4,7 +4,8 @@ Pin ANY tweet!
 ## Use as a UserScript
 To run from a UserScript extension such as Tampermonkey or Greasemonkey, append the following to the script's headers
 ```javascript
-// @match        *://twitter.com/*
+// @match *://twitter.com/*
+// @require https://raw.githubusercontent.com/alerithe/anypin/master/index.js
 ```
 
 ## Use as an executable Bookmark

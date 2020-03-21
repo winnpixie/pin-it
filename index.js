@@ -5,6 +5,8 @@
     let authToken = '';
     for (let _script of document.scripts) {
         if (_script.src.indexOf('abs.twimg.com/responsive-web/web/main') !== -1) {
+            console.log("main script found!");
+
             window.fetch(_script.src).then(res => {
                 if (res.ok) {
                     res.text().then(txt => {
@@ -19,6 +21,7 @@
     }
 
     if (authToken.length > 0) {
+        console.log("auth token not empty!")
         // https://stackoverflow.com/questions/34862749/alternative-to-ajaxcomplete-of-jquery-in-javascript-for-xmlhttprequest-or-act
         const oldXhrSend = XMLHttpRequest.prototype.send;
 
@@ -43,5 +46,7 @@
             }
             oldXhrSend.apply(this, params);
         }
+
+        console.log("anypin active!");
     }
 })();

@@ -21,7 +21,6 @@
 
                             // https://stackoverflow.com/questions/34862749/alternative-to-ajaxcomplete-of-jquery-in-javascript-for-xmlhttprequest-or-act
                             const _send = XMLHttpRequest.prototype.send;
-
                             XMLHttpRequest.prototype.send = function () {
                                 if (this._url !== undefined && this._url.endsWith("/retweet.json")) {
                                     let _onreadystatechange = this.onreadystatechange;

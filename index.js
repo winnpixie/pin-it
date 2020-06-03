@@ -8,7 +8,7 @@
         _open.apply(this, arguments);
     }
 
-    // Use this to avoid using the ugly method I did to 
+    // My brain is bigger than the entirety of the multi-verse
     const _srh = XMLHttpRequest.prototype.setRequestHeader;
     XMLHttpRequest.prototype.setRequestHeader = function () {
         if (this.headers == null) {

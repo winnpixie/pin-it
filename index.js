@@ -8,6 +8,16 @@
         _open.apply(this, arguments);
     }
 
+    // Use this to avoid using the ugly method I did to 
+    const _srh = XMLHttpRequest.prototype.setRequestHeader;
+    XMLHttpRequest.prototype.setRequestHeader = function () {
+        if (this.headers == null) {
+            this.headers = [];
+        }
+        this.headers[arguments[0]] = arguments[1];
+        _srh.apply(this, arguments);
+    }
+
     // https://stackoverflow.com/questions/34862749/alternative-to-ajaxcomplete-of-jquery-in-javascript-for-xmlhttprequest-or-act
     let requestCallbacks = [];
     const _send = XMLHttpRequest.prototype.send;
@@ -25,27 +35,14 @@
     }
 
     class AnyPin {
-        constructor() {
-            this.authToken = '';
-        }
         initialize() {
-            for (let _script of document.scripts) {
-                if (_script.src.includes('/main')) {
-                    window.fetch(_script.src).then(response => {
-                        response.text().then(body => {
-                            let tokenArea = body.substring(body.indexOf('Web-12",') + 8);
-                            tokenArea = tokenArea.substring(tokenArea.indexOf('"') + 1);
-                            this.authToken = tokenArea.substring(0, tokenArea.indexOf('"'));
-                        });
-                    });
-                }
-            }
-
             // Register the callback to listen to /retweet.json
             requestCallbacks.push(xhr => {
                 if (xhr.resource.endsWith('/retweet.json')) {
                     if (prompt('Would you like to pin this tweet to your profile? [y/N]', 'n') === 'y') {
                         let jsonObj = JSON.parse(xhr.responseText);
+                        let token = xhr.headers['authorization'];
+                        token = token.startsWith('Bearer') ? token.substring(7) : token;
                         window.fetch('https://twitter.com/i/tweet/pin', {
                             method: 'POST',
                             cache: 'no-cache',
@@ -53,7 +50,7 @@
                                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                                 'x-twitter-active-user': 'yes'
                             },
-                            body: `authenticity_token=${this.authToken}&tweet_mode=extended&id=${jsonObj.id_str}`
+                            body: `authenticity_token=${token}&id=${jsonObj.id_str}`
                         }).then(res => alert(res.ok ? 'Pinned! :)' : 'Could not pin tweet! :('));
                     }
                 }

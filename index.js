@@ -45,7 +45,6 @@
                         token = token.startsWith('Bearer') ? token.substring(7) : token;
                         window.fetch('https://twitter.com/i/tweet/pin', {
                             method: 'POST',
-                            cache: 'no-cache',
                             headers: {
                                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                                 'x-twitter-active-user': 'yes'

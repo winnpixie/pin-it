@@ -45,13 +45,16 @@
                         let jsonObj = JSON.parse(xhr.responseText);
                         let token = xhr.headers['authorization'];
                         token = token.startsWith('Bearer') ? token.substring(7) : token;
-                        window.fetch('https://twitter.com/i/tweet/pin', {
+                        window.fetch('https://twitter.com/i/api/1.1/account/pin_tweet.json', {
+                            credentials: 'include',
                             method: 'POST',
                             headers: {
                                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                                'x-twitter-active-user': 'yes'
+                                'x-twitter-active-user': 'yes',
+                                'x-csrf-token': xhr.headers['x-csrf-token'],
+                                'authorization': `Bearer ${token}`
                             },
-                            body: `authenticity_token=${token}&id=${jsonObj.id_str}`
+                            body: `tweet_mode=extended&id=${jsonObj.id_str}`
                         }).then(res => alert(res.ok ? 'Pinned! :)' : 'Could not pin tweet! :('));
                     }
                 }

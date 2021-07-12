@@ -1,4 +1,4 @@
-/*
+/**
  * AnyPin - Pin ANY tweet!
  * Author: Summer (https://github.com/alerithe)
  * Source: https://github.com/alerithe/anypin/

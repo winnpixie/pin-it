@@ -11,7 +11,6 @@
 
     const _open = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function () {
-        this.xMethod = arguments[0];
         this.xUrl = arguments[1];
 
         _open.apply(this, arguments);
@@ -29,10 +28,6 @@
 
     const _send = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function () {
-        if (arguments.length > 0 && arguments[0] != null) {
-            this.xBody = arguments[0];
-        }
-
         let _onreadystatechange = this.onreadystatechange;
         this.onreadystatechange = function () {
             if (this.readyState === XMLHttpRequest.DONE) {
@@ -63,7 +58,7 @@
                     'authorization': `Bearer ${token.startsWith('Bearer ') ? token.substring(7) : token}`
                 },
                 body: `tweet_mode=extended&id=${jsonResp.data.create_retweet.retweet_results.result.rest_id}`
-            }).then(res => alert(res.ok ? 'Pinned! :)' : 'Could not pin tweet! :('));
+            }).then(res => alert(res.ok ? 'Pinned! :)' : 'Pin failed! :('));
         }
     });
 })();

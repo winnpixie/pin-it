@@ -1,5 +1,5 @@
 # anypin
-Pin ANY tweet!
+Pin any tweet to your profile on https://twitter.com/
 
 ## Use as a UserScript
 To run from a UserScript extension such as Tampermonkey or Greasemonkey, append the following to the script's headers:

@@ -1,7 +1,7 @@
 /*
  * anypin - Pin any tweet to your profile on https://twitter.com/
- * Author: Summer (https://github.com/alerithe)
- * Source: https://github.com/alerithe/anypin/
+ * Author: Sativa (https://github.com/suhtiva)
+ * Source: https://github.com/suhtiva/anypin/
  */
 (function () {
     'use strict';

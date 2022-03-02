@@ -1,7 +1,17 @@
+// ==UserScript==
+// @name         anypin
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Pin any tweet on Twitter.com
+// @author       Hannah
+// @match *://twitter.com/*
+// @grant        none
+// ==/UserScript==
+
 /*
  * anypin - Pin any tweet to your profile on https://twitter.com/
- * Author: Sativa (https://github.com/suhtiva)
- * Source: https://github.com/suhtiva/anypin/
+ * Author: Hannah (https://github.com/tivuhh)
+ * Source: https://github.com/tivuhh/anypin/
  */
 (function () {
     'use strict';

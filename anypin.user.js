@@ -10,8 +10,8 @@
 
 /*
  * anypin - Pin any tweet to your profile on https://twitter.com/
- * Author: Hannah (https://github.com/tivuhh)
- * Source: https://github.com/tivuhh/anypin/
+ * Author: Hannah (https://github.com/winnpixie)
+ * Source: https://github.com/winnpixie/anypin/
  */
 (function () {
     'use strict';

@@ -16,59 +16,58 @@
 (function () {
     'use strict';
 
-    // TODO: BEGIN Xhr Snooping
-    window.onHttpRequestCompleted = [];
+    // BEGIN Xhr eXtensions
+    window.XHRX = {
+        onCompleted: []
+    };
 
-    const _open = XMLHttpRequest.prototype.open;
+    const xhr_open = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function () {
         this.xUrl = arguments[1];
+        xhr_open.apply(this, arguments);
+    };
 
-        _open.apply(this, arguments);
-    }
-
-    const _setRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
+    const xhr_setRequestHeader = XMLHttpRequest.prototype.setRequestHeader;
     XMLHttpRequest.prototype.setRequestHeader = function () {
-        if (this.xHeaders == null) {
-            this.xHeaders = [];
-        }
+        if (this.xHeaders == null) this.xHeaders = [];
+
         this.xHeaders[arguments[0]] = arguments[1];
+        xhr_setRequestHeader.apply(this, arguments);
+    };
 
-        _setRequestHeader.apply(this, arguments);
-    }
-
-    const _send = XMLHttpRequest.prototype.send;
+    const xhr_send = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function () {
-        let _onreadystatechange = this.onreadystatechange;
+        const xhr_onreadystatechange = this.onreadystatechange;
         this.onreadystatechange = function () {
             if (this.readyState === XMLHttpRequest.DONE) {
-                window.onHttpRequestCompleted.forEach(func => func(this));
+                window.XHRX.onCompleted.forEach(action => action(this));
             }
 
-            _onreadystatechange.apply(this, arguments);
-        }
+            if (xhr_onreadystatechange != null) xhr_onreadystatechange.apply(this, arguments);
+        };
 
-        _send.apply(this, arguments);
-    }
-    // TODO: END Xhr Snooping
+        xhr_send.apply(this, arguments);
+    };
+    // END Xhr eXtensions
 
-    // Register a XHR completion callback for /retweet.json
-    window.onHttpRequestCompleted.push(xhr => {
-        if (xhr.xUrl.endsWith('/CreateRetweet')
-            && prompt('Would you like to pin this tweet to your profile? [y/N]', 'n') === 'y') {
-            let jsonResp = JSON.parse(xhr.responseText);
-            let token = xhr.xHeaders.authorization;
+    window.XHRX.onCompleted.push(xhr => {
+        if (!xhr.xUrl.endsWith('/CreateRetweet')) return;
+        if (prompt('Would you like to pin this tweet?', 'n') !== 'y') return;
 
-            window.fetch('https://twitter.com/i/api/1.1/account/pin_tweet.json', {
-                credentials: 'include',
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    'x-twitter-active-user': 'yes',
-                    'x-csrf-token': xhr.xHeaders['x-csrf-token'],
-                    'authorization': `Bearer ${token.startsWith('Bearer ') ? token.substring(7) : token}`
-                },
-                body: `tweet_mode=extended&id=${jsonResp.data.create_retweet.retweet_results.result.rest_id}`
-            }).then(res => alert(res.ok ? 'Pinned! :)' : 'Pin failed! :('));
-        }
+        let json = JSON.parse(xhr.responseText);
+        let token = xhr.xHeaders.authorization;
+
+        // FIXME: This produces a 404 Not Found due to tweet id?
+        window.fetch('https://twitter.com/i/api/1.1/account/pin_tweet.json', {
+            credentials: 'include',
+            method: 'POST',
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded',
+                'x-twitter-active-user': 'yes',
+                'x-csrf-token': xhr.xHeaders['x-csrf-token'],
+                'authorization': `Bearer ${token.startsWith('Bearer ') ? token.substring(7) : token}`
+            },
+            body: `tweet_mode=extended&id=${json.data.create_retweet.retweet_results.result.rest_id}`
+        }).then(res => alert(res.ok ? 'OK!' : `FAIL!\n\nHTTP ${res.status} (${res.statusText})`));
     });
 })();

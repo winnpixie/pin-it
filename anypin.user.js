@@ -1,15 +1,16 @@
 // ==UserScript==
 // @name         anypin
 // @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  Pin any tweet on Twitter.com
+// @version      1.0.0
+// @description  Pin any tweet on to your Twitter profile.
 // @author       Hannah
-// @match *://twitter.com/*
+// @match        *://twitter.com/*
 // @grant        none
+// @run-at       document-start
 // ==/UserScript==
 
 /*
- * anypin - Pin any tweet to your profile on https://twitter.com/
+ * anypin - Pin any tweet to your Twitter profile.
  * Author: Hannah (https://github.com/winnpixie)
  * Source: https://github.com/winnpixie/anypin/
  */
@@ -50,6 +51,7 @@
     };
     // END Xhr eXtensions
 
+    // FIXME: This currently does not work.
     window.XHRX.onCompleted.push(xhr => {
         if (!xhr.xUrl.endsWith('/CreateRetweet')) return;
         if (prompt('Would you like to pin this tweet?', 'n') !== 'y') return;

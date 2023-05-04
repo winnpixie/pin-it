@@ -1,3 +1,6 @@
+# THIS SCRIPT NO LONGER WORKS!
+I *believe* that \[non-quoted\] retweets are now handled differently internally, as trying to use this will return "No status found with that ID." from the API.
+
 # anypin
 Pin any tweet to your Twitter profile.
 

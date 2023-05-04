@@ -17,7 +17,7 @@
 (function () {
     'use strict';
 
-    // BEGIN Xhr eXtensions
+    // BEGIN XHR eXtensions
     window.XHRX = {
         onCompleted: []
     };
@@ -49,7 +49,7 @@
 
         xhr_send.apply(this, arguments);
     };
-    // END Xhr eXtensions
+    // END XHR eXtensions
 
     // FIXME: This currently does not work.
     window.XHRX.onCompleted.push(xhr => {

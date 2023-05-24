@@ -4,7 +4,7 @@
 // @version      1.0.0
 // @description  Pin any tweet on to your Twitter profile.
 // @author       Hannah
-// @match        *://twitter.com/*
+// @match        https://*.twitter.com/*
 // @grant        none
 // @run-at       document-start
 // ==/UserScript==

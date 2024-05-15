@@ -1,4 +1,4 @@
-# anypin
+# pin-it
 Pin any tweet to your Twitter profile.
 
 ## !! DISCLAIMER !!

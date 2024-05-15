@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         anypin
+// @name         pin-it
 // @namespace    http://tampermonkey.net/
 // @version      1.0.0
 // @description  Pin any tweet on to your Twitter profile.
@@ -10,21 +10,40 @@
 // ==/UserScript==
 
 /*
- * anypin - Pin any tweet to your Twitter profile.
- * Author: Hannah (https://github.com/winnpixie)
- * Source: https://github.com/winnpixie/anypin/
+ * pin-it - Pin any tweet to your Twitter profile.
+ * Author: Hannah ( https://github.com/winnpixie/ )
+ * Source: https://github.com/winnpixie/pin-it/
  */
 (function () {
     'use strict';
 
     // BEGIN XHR eXtensions
-    window.XHRX = {
-        onCompleted: []
-    };
+    // BEGIN Event declarations
+    class XHREvent {
+        constructor(context) {
+            this.context = context;
 
+            this.cancelled = false;
+        }
+    }
+
+    class XHRFinishedEvent extends XHREvent {
+        constructor(context) {
+            super(context);
+        }
+    }
+    // END Event declarations
+
+    const XHRExt = {
+        finishHandlers: []
+    };
+    window.XHRExt = XHRExt;
+
+    // BEGIN Prototype hacking
     const xhr_open = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function () {
         this.xUrl = arguments[1];
+
         xhr_open.apply(this, arguments);
     };
 
@@ -33,6 +52,7 @@
         if (this.xHeaders == null) this.xHeaders = [];
 
         this.xHeaders[arguments[0]] = arguments[1];
+
         xhr_setRequestHeader.apply(this, arguments);
     };
 
@@ -41,7 +61,7 @@
         const xhr_onreadystatechange = this.onreadystatechange;
         this.onreadystatechange = function () {
             if (this.readyState === XMLHttpRequest.DONE) {
-                window.XHRX.onCompleted.forEach(action => action(this));
+                XHRExt.finishHandlers.forEach(handler => handler.call(null, new XHRFinishedEvent(this)));
             }
 
             if (xhr_onreadystatechange != null) xhr_onreadystatechange.apply(this, arguments);
@@ -49,15 +69,17 @@
 
         xhr_send.apply(this, arguments);
     };
+    // END Prototype hacking
     // END XHR eXtensions
 
     // FIXME: This currently does not work.
-    window.XHRX.onCompleted.push(xhr => {
-        if (!xhr.xUrl.endsWith('/CreateRetweet')) return;
+    window.XHRExt.finishHandlers.push(event => {
+        let ctx = event.context;
+        if (!ctx.xUrl.endsWith('/CreateRetweet')) return;
         if (prompt('Would you like to pin this tweet?', 'n') !== 'y') return;
 
-        let json = JSON.parse(xhr.responseText);
-        let token = xhr.xHeaders.authorization;
+        let json = JSON.parse(ctx.responseText);
+        let token = ctx.xHeaders.authorization;
 
         // FIXME: This produces a 404 Not Found due to tweet id?
         window.fetch('https://twitter.com/i/api/1.1/account/pin_tweet.json', {
@@ -66,7 +88,7 @@
             headers: {
                 'content-type': 'application/x-www-form-urlencoded',
                 'x-twitter-active-user': 'yes',
-                'x-csrf-token': xhr.xHeaders['x-csrf-token'],
+                'x-csrf-token': ctx.xHeaders['x-csrf-token'],
                 'authorization': `Bearer ${token.startsWith('Bearer ') ? token.substring(7) : token}`
             },
             body: `tweet_mode=extended&id=${json.data.create_retweet.retweet_results.result.rest_id}`
